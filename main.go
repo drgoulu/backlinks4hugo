@@ -50,7 +50,38 @@ func extractFrontmatter(content string) (string, string) {
 	return parts[1], parts[2]
 }
 
+
+var (
+	nonAlphaNumRe = regexp.MustCompile(`[^a-z0-9-_]+`)
+	multiHyphenRe = regexp.MustCompile(`-+`)
+)
+
+func slugify(s string) string {
+	s = strings.ToLower(strings.TrimSpace(s))
+	replacements := map[rune]string{
+		'à': "a", 'á': "a", 'â': "a", 'ã': "a", 'ä': "a", 'å': "a", 'æ': "ae",
+		'è': "e", 'é': "e", 'ê': "e", 'ë': "e",
+		'ì': "i", 'í': "i", 'î': "i", 'ï': "i",
+		'ò': "o", 'ó': "o", 'ô': "o", 'õ': "o", 'ö': "o", 'ø': "o", 'œ': "oe",
+		'ù': "u", 'ú': "u", 'û': "u", 'ü': "u",
+		'ý': "y", 'ÿ': "y",
+		'ç': "c", 'ñ': "n",
+	}
+	var sb strings.Builder
+	for _, r := range s {
+		if rep, ok := replacements[r]; ok {
+			sb.WriteString(rep)
+		} else {
+			sb.WriteRune(r)
+		}
+	}
+	res := nonAlphaNumRe.ReplaceAllString(sb.String(), "-")
+	res = multiHyphenRe.ReplaceAllString(res, "-")
+	return strings.Trim(res, "-")
+}
+
 func normalizePath(p string) string {
+
 	p = strings.TrimSpace(p)
 	if p == "" || p == "/" {
 		return ""
@@ -139,7 +170,8 @@ func main() {
 		fname := filepath.Base(fpath)
 		if m := slugRe.FindStringSubmatch(fm); len(m) > 1 {
 			slug = strings.Trim(m[1], " \"'")
-		} else {
+		}
+		if slug == "" {
 			nameNoExt := strings.TrimSuffix(fname, ".md")
 			if fileDateRe.MatchString(nameNoExt) && len(nameNoExt) > 11 {
 				slug = nameNoExt[11:]
@@ -147,6 +179,7 @@ func main() {
 				slug = nameNoExt
 			}
 		}
+		slug = slugify(slug)
 
 		title := slug
 		if m := titleRe.FindStringSubmatch(fm); len(m) > 1 {

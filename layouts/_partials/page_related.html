@@ -10,13 +10,14 @@
 
   {{/* 1. Prioritize backlinks (chronological order) */}}
   {{ range $backlinks_data }}
-    {{ if and (not (in $seen_urls .url)) (lt (len $final_list) $limit) }}
-      {{ $seen_urls = $seen_urls | append .url }}
-      {{ $title := .title }}
-      {{ with site.GetPage .url }}
-        {{ $title = .LinkTitle | default .Title }}
+    {{ $target_page := site.GetPage .url }}
+    {{ if $target_page }}
+      {{ $perm := $target_page.RelPermalink }}
+      {{ if and (not (in $seen_urls $perm)) (not (in $seen_urls .url)) (lt (len $final_list) $limit) }}
+        {{ $seen_urls = $seen_urls | append $perm | append .url }}
+        {{ $title := $target_page.LinkTitle | default $target_page.Title | default .title }}
+        {{ $final_list = $final_list | append (dict "RelPermalink" $perm "Title" $title "is_backlink" true) }}
       {{ end }}
-      {{ $final_list = $final_list | append (dict "RelPermalink" .url "Title" $title "is_backlink" true) }}
     {{ end }}
   {{ end }}
 
