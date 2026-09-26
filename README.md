@@ -11,7 +11,8 @@
 * **Blazing-fast Go indexer**: Scans over 18,000 Markdown files and resolves canonical permalinks and aliases in under 500 ms.
 * **Zero Hugo build slowdown**: The static index is queried in $O(1)$ constant time inside templates, introducing no overhead to compilation.
 * **Turnkey Hugo Blox integration**: Includes a drop-in `layouts/_partials/page_related.html` partial that overrides Hugo Blox's default template.
-* **Seamless fallback**: If an article has fewer than 5 backlinks, the remaining slots are automatically filled by Hugo's standard taxonomy-based recommendation engine (tags and categories).
+* **Chronological Prioritization**: Backlinks are sorted chronologically (`asc` by default) so direct sequels and immediate follow-up articles appear first.
+* **Seamless fallback**: If an article has fewer backlinks than the limit (default 5, configurable via `params.backlinks.limit`), remaining slots are filled by Hugo's standard taxonomy-based recommendation engine (tags and categories).
 
 ---
 
@@ -67,6 +68,8 @@ Options:
         Path to the output JSON file (default: "data/backlinks.json")
   -domains string
         Comma-separated domains treated as internal links (default: "drgoulu.com,www.drgoulu.com")
+  -order string
+        Sorting order of backlinks: "asc" (chronological, oldest first, default) or "desc" (reverse-chronological)
   -quiet
         Suppress status and log messages
 ```

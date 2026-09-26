@@ -3,13 +3,14 @@
   {{ $current_url := .RelPermalink }}
   {{ $backlinks_map := hugo.Data.backlinks | default site.Data.backlinks }}
   {{ $backlinks_data := index $backlinks_map $current_url | default slice }}
+  {{ $limit := site.Params.backlinks.limit | default 5 }}
   
   {{ $seen_urls := slice $current_url }}
   {{ $final_list := slice }}
 
-  {{/* 1. Prioritize backlinks (newest first) */}}
+  {{/* 1. Prioritize backlinks (chronological order) */}}
   {{ range $backlinks_data }}
-    {{ if and (not (in $seen_urls .url)) (lt (len $final_list) 5) }}
+    {{ if and (not (in $seen_urls .url)) (lt (len $final_list) $limit) }}
       {{ $seen_urls = $seen_urls | append .url }}
       {{ $title := .title }}
       {{ with site.GetPage .url }}
@@ -20,10 +21,10 @@
   {{ end }}
 
   {{/* 2. Complete remaining slots with standard taxonomy-related pages */}}
-  {{ if lt (len $final_list) 5 }}
+  {{ if lt (len $final_list) $limit }}
     {{ $standard_related := site.RegularPages.Related . }}
     {{ range $standard_related }}
-      {{ if and (not (in $seen_urls .RelPermalink)) (lt (len $final_list) 5) }}
+      {{ if and (not (in $seen_urls .RelPermalink)) (lt (len $final_list) $limit) }}
         {{ $seen_urls = $seen_urls | append .RelPermalink }}
         {{ $final_list = $final_list | append (dict "RelPermalink" .RelPermalink "Title" (.LinkTitle | default .Title) "is_backlink" false) }}
       {{ end }}

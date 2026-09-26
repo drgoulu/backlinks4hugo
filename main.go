@@ -69,6 +69,7 @@ func main() {
 	outputFile := flag.String("output", filepath.Join("data", "backlinks.json"), "Chemin du fichier JSON de sortie")
 	domainsFlag := flag.String("domains", "drgoulu.com,www.drgoulu.com", "Domaines séparés par des virgules considérés comme internes")
 	quiet := flag.Bool("quiet", false, "Désactiver les messages de progression")
+	orderFlag := flag.String("order", "asc", "Tri des rétroliens: asc (chronologique, défaut) ou desc (antéchronologique)")
 	flag.Parse()
 
 	start := time.Now()
@@ -235,11 +236,15 @@ func main() {
 		}
 	}
 
-	// 3. Tri chronologique décroissant pour chaque cible
+	// 3. Tri chronologique pour chaque cible (ascendant par défaut pour afficher les suites directes)
+	isDesc := strings.ToLower(strings.TrimSpace(*orderFlag)) == "desc"
 	for target := range backlinks {
 		items := backlinks[target]
 		sort.Slice(items, func(i, j int) bool {
-			return items[i].Date > items[j].Date
+			if isDesc {
+				return items[i].Date > items[j].Date
+			}
+			return items[i].Date < items[j].Date
 		})
 		backlinks[target] = items
 	}
