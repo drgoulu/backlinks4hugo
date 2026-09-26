@@ -1,25 +1,25 @@
 # backlinks4hugo
 
-> **Module Hugo & Hugo Blox pour prioriser les rétroliens (backlinks) dans les articles recommandés (« Sur le même sujet »).**
+> **Hugo & Hugo Blox module to prioritize backlinks in recommended articles ("Related Content").**
 
-`backlinks4hugo` analyse automatiquement les liens internes de votre site statique Hugo, génère un index statique inversé (`data/backlinks.json`) et affiche en tête de la section **« Sur le même sujet »** les articles qui citent la page consultée.
+`backlinks4hugo` automatically analyzes internal links across your Hugo static site, generates a static inverted index (`data/backlinks.json`), and features articles that reference the current page at the top of the **"Related Content"** section.
 
 ---
 
-## 🚀 Fonctionnalités
+## 🚀 Features
 
-* **Indexation ultra-rapide en Go** : Analyse plus de 18 000 fichiers Markdown et résout les permaliens/alias en moins de 500 ms.
-* **Zéro ralentissement de la compilation Hugo** : L'index statique est interrogé en temps constant $O(1)$ dans les templates.
-* **Intégration Hugo Blox clé en main** : Fournit le partial `layouts/_partials/page_related.html` qui s'intègre nativement à Hugo Blox.
-* **Repli transparent (Fallback)** : Si un article a moins de 5 rétroliens, les emplacements restants sont complétés automatiquement par le moteur de recommandation standard d'Hugo (tags et catégories).
+* **Blazing-fast Go indexer**: Scans over 18,000 Markdown files and resolves canonical permalinks and aliases in under 500 ms.
+* **Zero Hugo build slowdown**: The static index is queried in $O(1)$ constant time inside templates, introducing no overhead to compilation.
+* **Turnkey Hugo Blox integration**: Includes a drop-in `layouts/_partials/page_related.html` partial that overrides Hugo Blox's default template.
+* **Seamless fallback**: If an article has fewer than 5 backlinks, the remaining slots are automatically filled by Hugo's standard taxonomy-based recommendation engine (tags and categories).
 
 ---
 
 ## 📦 Installation
 
-### 1. Importer le module Hugo
+### 1. Import the Hugo Module
 
-Dans la configuration de votre site (`config/_default/module.yaml` ou `hugo.yaml`) :
+In your site configuration (`config/_default/module.yaml` or `hugo.yaml`):
 
 ```yaml
 module:
@@ -27,53 +27,53 @@ module:
     - path: github.com/drgoulu/backlinks4hugo
 ```
 
-Et dans `go.mod` de votre site :
+And in your site's `go.mod`:
 
 ```go
 require github.com/drgoulu/backlinks4hugo v0.0.0
 ```
 
-*(En développement local, vous pouvez utiliser une directive `replace` dans `go.mod`)* :
+*(For local development, you can use a `replace` directive in `go.mod`)*:
 ```go
 replace github.com/drgoulu/backlinks4hugo => ../backlinks4hugo
 ```
 
 ---
 
-## 🛠️ Utilisation de l'outil CLI (Go)
+## 🛠️ CLI Tool Usage (Go)
 
-L'outil en ligne de commande inclus dans le module génère le fichier `data/backlinks.json`.
+The command-line tool included in the module generates the `data/backlinks.json` index.
 
-### Exécution directe
+### Direct Execution
 
 ```bash
 go run github.com/drgoulu/backlinks4hugo
 ```
 
-Ou en local depuis le dossier du module :
+Or locally from the module directory:
 ```bash
-go run /chemin/vers/backlinks4hugo
+go run /path/to/backlinks4hugo
 ```
 
-### Options en ligne de commande
+### Command-Line Options
 
 ```bash
 go run github.com/drgoulu/backlinks4hugo [OPTIONS]
 
-Options :
+Options:
   -content string
-        Chemin vers le dossier contenant les fichiers Markdown (défaut : "content")
+        Path to the folder containing Markdown content files (default: "content")
   -output string
-        Chemin du fichier JSON de sortie (défaut : "data/backlinks.json")
+        Path to the output JSON file (default: "data/backlinks.json")
   -domains string
-        Domaines séparés par des virgules considérés comme des liens internes (défaut : "drgoulu.com,www.drgoulu.com")
+        Comma-separated domains treated as internal links (default: "drgoulu.com,www.drgoulu.com")
   -quiet
-        Désactive les messages de log
+        Suppress status and log messages
 ```
 
-### Intégration dans `package.json`
+### Integration into `package.json`
 
-Dans le `package.json` de votre site Hugo :
+In your Hugo site's `package.json`:
 
 ```json
 {
@@ -87,6 +87,6 @@ Dans le `package.json` de votre site Hugo :
 
 ---
 
-## 📄 Licence
+## 📄 License
 
 MIT © [Philippe Guglielmetti (Dr. Goulu)](https://drgoulu.com/)
