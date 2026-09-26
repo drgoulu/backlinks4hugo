@@ -1,0 +1,46 @@
+{{/* Show related/recommended content with backlinks prioritized */}}
+{{ if .Params.show_related }}
+  {{ $current_url := .RelPermalink }}
+  {{ $backlinks_map := hugo.Data.backlinks | default site.Data.backlinks }}
+  {{ $backlinks_data := index $backlinks_map $current_url | default slice }}
+  
+  {{ $seen_urls := slice $current_url }}
+  {{ $final_list := slice }}
+
+  {{/* 1. Prioritize backlinks (newest first) */}}
+  {{ range $backlinks_data }}
+    {{ if and (not (in $seen_urls .url)) (lt (len $final_list) 5) }}
+      {{ $seen_urls = $seen_urls | append .url }}
+      {{ $title := .title }}
+      {{ with site.GetPage .url }}
+        {{ $title = .LinkTitle | default .Title }}
+      {{ end }}
+      {{ $final_list = $final_list | append (dict "RelPermalink" .url "Title" $title "is_backlink" true) }}
+    {{ end }}
+  {{ end }}
+
+  {{/* 2. Complete remaining slots with standard taxonomy-related pages */}}
+  {{ if lt (len $final_list) 5 }}
+    {{ $standard_related := site.RegularPages.Related . }}
+    {{ range $standard_related }}
+      {{ if and (not (in $seen_urls .RelPermalink)) (lt (len $final_list) 5) }}
+        {{ $seen_urls = $seen_urls | append .RelPermalink }}
+        {{ $final_list = $final_list | append (dict "RelPermalink" .RelPermalink "Title" (.LinkTitle | default .Title) "is_backlink" false) }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+
+  {{ with $final_list }}
+  <hr class="border-dotted border-neutral-300 dark:border-neutral-600">
+  <div class="text-sm">
+    <h3>{{ i18n "related" | default "Sur le même sujet" }}</h3>
+    <ul>
+      {{ range . }}
+      <li>
+        <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+      </li>
+      {{ end }}
+    </ul>
+  </div>
+  {{ end }}
+{{ end }}

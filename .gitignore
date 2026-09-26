@@ -1,0 +1,12 @@
+# Binaries
+backlinks
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test or temporary files
+*.test
+*.out
+.DS_Store
