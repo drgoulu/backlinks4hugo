@@ -1,7 +1,7 @@
 {{/* Show related/recommended content with backlinks prioritized */}}
 {{ if .Params.show_related }}
   {{ $current_url := .RelPermalink }}
-  {{ $backlinks_map := hugo.Data.backlinks | default site.Data.backlinks }}
+  {{ $backlinks_map := hugo.Data.backlinks | default dict }}
   {{ $backlinks_data := index $backlinks_map $current_url | default slice }}
   {{ $limit := site.Params.backlinks.limit | default 5 }}
   
